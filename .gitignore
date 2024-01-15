@@ -1,0 +1,8 @@
+.vs/
+obj/
+bin/
+*.user
+*.datasource
+*.tmp
+*.log
+*.stackdump
