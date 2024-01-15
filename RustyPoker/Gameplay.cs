@@ -86,7 +86,8 @@ namespace RustyPoker
             // write out what hand each player has
             foreach(var player in players)
             {
-                var playerHand = player.Hand;
+                var playerHand = new List<Card>();
+                playerHand.AddRange(player.Hand);
                 playerHand.AddRange(board);
                 player.HandRank = SimplePokerHandEvaluator.EvaluatePokerHand(playerHand);
                 Console.WriteLine($"player {player.Name} has a {player.HandRank}");
