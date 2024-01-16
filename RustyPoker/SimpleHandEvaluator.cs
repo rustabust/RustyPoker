@@ -7,18 +7,6 @@ using System.Threading.Tasks;
 
 namespace RustyPoker
 {
-    //public class PokerHandEvaluator
-    //{
-    //    //public List<Card> PlayerHand { get; set; }
-    //    //public List<Card> Board { get; set; }
-    //    public List<Card> Hand { get; set; }
-    //    public List<Card> BestFive { get; set; }
-    //    public bool EvaluationDone { get; set; }
-    //    public PokerHandEvaluator(List<Card> hand)
-    //    {
-    //        this.Hand = hand;
-    //    }
-    //}
     /// <summary>
     /// could consider making this a non static class, 
     /// this way we can keep track of checks we've done on the cards
