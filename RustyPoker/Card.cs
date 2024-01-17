@@ -1,14 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RustyPoker
+﻿namespace RustyPoker
 {
-    
-    
     public class Card
     {
         public Suits Suit { get; private set; }
@@ -40,10 +31,10 @@ namespace RustyPoker
             return result;
         }
 
-        //public override int GetHashCode()
-        //{
-        //    return this.Name.GetHashCode();
-        //}
+        public override int GetHashCode()
+        {
+            return this.Name.GetHashCode();
+        }
     }
 
     public enum Suits
