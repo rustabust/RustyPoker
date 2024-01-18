@@ -47,6 +47,7 @@
 
     public enum Numbers
     {
+        Undefined = -1,
         //ace low will be 1 for straights
         Two = 2,
         Three,

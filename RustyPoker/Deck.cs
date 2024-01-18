@@ -44,13 +44,17 @@ namespace RustyPoker
 
             var suits = Enum.GetValues(typeof(Suits));
             var numbers = Enum.GetValues(typeof(Numbers));
+            
 
             foreach (Suits suit in suits)
             {
                 foreach (Numbers number in numbers)
                 {
-                    var card = new Card(suit, number);
-                    cards.Add(card);
+                    if (number != Numbers.Undefined)
+                    {
+                        var card = new Card(suit, number);
+                        cards.Add(card);
+                    }
                 }
             }
 

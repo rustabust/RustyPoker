@@ -39,7 +39,7 @@ namespace RustyPoker
             this.Description = "";
 
             var defaultBestHand = this.InputCards.TakeLast(5).ToList();
-            SetBestHand(PokerHandRanks.FourOfAKind, defaultBestHand);
+            SetBestHand(PokerHandRanks.FullHouse, defaultBestHand);
         }
         public void SetBestHand(PokerHandRanks rank, List<Card> bestFive)
         {
@@ -68,9 +68,12 @@ namespace RustyPoker
                 case PokerHandRanks.Flush:
                     break;
                 case PokerHandRanks.FullHouse:
+                    Numbers setNumber = GetCardNumberByCount(3);
+                    Numbers pairNumber = GetCardNumberByCount(2);
+                    this.Description = $"Full House, {setNumber}s full of {pairNumber}s";
                     break;
                 case PokerHandRanks.FourOfAKind:
-                    Numbers cardNumber = this.BestFive.GroupBy(a => a.Number).First(b => b.Count() == 4).Key;
+                    Numbers cardNumber = GetCardNumberByCount(4);
                     this.Description = $"Four of a Kind, {cardNumber}s"; // these could be constantized
                     break;
                 case PokerHandRanks.StraightFlush:
@@ -80,6 +83,17 @@ namespace RustyPoker
                     this.Description = "Royal Flush"; // suit needed?
                     break;
             }
+        }
+
+        private Numbers GetCardNumberByCount(int count)
+        {
+            Numbers result = Numbers.Undefined;
+            var group = this.BestFive.GroupBy(a => a.Number).FirstOrDefault(b => b.Count() == count);
+            if (group != null)
+            {
+                result = group.Key;
+            }
+            return result;
         }
     }
 }

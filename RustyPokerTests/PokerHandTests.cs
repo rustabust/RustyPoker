@@ -63,7 +63,7 @@ namespace RustyPokerTests
         }
 
         [TestMethod]
-        public void TestConstructor1_HandDescription1()
+        public void TestConstructor_HandDescription_FourOfAKind()
         {
             var cards = new List<Card>
             {
@@ -78,6 +78,24 @@ namespace RustyPokerTests
 
             var ph = new PokerHand(cards);
             Assert.AreEqual(ph.Description, "Four of a Kind, Aces");
+        }
+
+        [TestMethod]
+        public void TestConstructor_HandDescription_FullHouse()
+        {
+            var cards = new List<Card>
+            {
+                new Card(Suits.Spades, Numbers.Ace),
+                new Card(Suits.Diamonds, Numbers.Ace),
+                new Card(Suits.Clubs, Numbers.Ace),
+                new Card(Suits.Hearts, Numbers.Five),
+                new Card(Suits.Diamonds, Numbers.Five),
+                new Card(Suits.Spades, Numbers.Four),
+                new Card(Suits.Clubs, Numbers.Two)
+            };
+
+            var ph = new PokerHand(cards);
+            Assert.AreEqual(ph.Description, "Full House, Aces full of Fives");
         }
     }
 }

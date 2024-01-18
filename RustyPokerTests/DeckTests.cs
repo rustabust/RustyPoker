@@ -30,10 +30,13 @@ namespace RustyPokerTests
             Assert.AreEqual(deck.Cards.Where(a => a.Suit == Suits.Diamonds).Count(), Deck.DECK_CARDS_PER_SUIT);
 
             var numbers = Enum.GetValues(typeof(Numbers));
-            foreach(Numbers number in numbers)
+            foreach (Numbers number in numbers)
             {
-                var numberCount = deck.Cards.Where(a => a.Number == number).Count();
-                Assert.AreEqual(numberCount, Deck.DECK_SUITS_COUNT);
+                if (number != Numbers.Undefined)
+                {
+                    var numberCount = deck.Cards.Where(a => a.Number == number).Count();
+                    Assert.AreEqual(numberCount, Deck.DECK_SUITS_COUNT);
+                }
             }
             // probably need to make a Hand class that will test this too.
 
