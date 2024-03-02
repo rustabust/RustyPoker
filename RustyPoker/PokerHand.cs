@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace RustyPoker
 {
-    public class PokerHand : PokerHandEvaluator
+    public class PokerHand 
     {
         public static int POKER_HAND_PERSONAL_CARD_COUNT = 2;
         public static int POKER_HAND_FULL_HAND_COUNT = 5; // for texas hold em at least
         public static int POKER_HAND_PERSONAL_PLUS_BOARD_CARD_COUNT = POKER_HAND_PERSONAL_CARD_COUNT + POKER_HAND_FULL_HAND_COUNT;
 
-        public List<Card> InputCards { get; set; }
+        public List<Card> Cards { get; set; }
         public List<Card> BestFive { get; private set; }
 
         public PokerHandRanks Rank { get; set; }
@@ -34,7 +34,7 @@ namespace RustyPoker
                 throw new ArgumentException("duplicate cards are not allowed in a poker hand.");
             }
 
-            this.InputCards = cards.OrderBy(a => a.Number).ToList();
+            this.Cards = cards.OrderBy(a => a.Number).ToList();
             this.BestFive = new List<Card>();
             this.Rank = PokerHandRanks.HighCard;
             this.Description = "";
@@ -102,6 +102,14 @@ namespace RustyPoker
 
         #region poker hand evaluation
 
+        private void UpdateBestHand(HandEvaluation handEvaluation)
+        {
+            if (handEvaluation != null && handEvaluation.IsRequestedHand)
+            {
+                this.BestFive = handEvaluation.Cards;
+            }
+        }
+
         public PokerHandRanks EvaluatePokerHand()
         {
             // i currently see no better way than to just go through the whole list of hands
@@ -110,15 +118,16 @@ namespace RustyPoker
             // * determine the rank of the hand
             // * determine the rank of the hand compared to other same ranked hands (9s full of 2s vs 2s full of 9s, or high card vs high card, evaluating kickers, etc)
             // * determine the name of the hand 
-            this.InputCards = this.InputCards.OrderBy(a => a.Number).ToList();
-            bool isFlush = IsFlush(this.InputCards);
+            this.Cards = this.Cards.OrderBy(a => a.Number).ToList();
+            var isFlush = IsFlush(this.Cards);  consider sending the poker hand into this and other similar static functions and having them update the best hand before returning...
+            UpdateBestHand(isFlush);
 
-            if (isFlush)
+            if (isFlush) 
             {
-                bool straightFlush = IsStraightFlush(this.InputCards);
+                bool straightFlush = IsStraightFlush(this.Cards);
                 if (straightFlush)
                 {
-                    bool isRoyalFlushResult = IsRoyalFlush(this.InputCards);
+                    bool isRoyalFlushResult = IsRoyalFlush(this.Cards);
                     if (isRoyalFlushResult)
                     {
                         return PokerHandRanks.RoyalFlush;
@@ -130,7 +139,7 @@ namespace RustyPoker
                 }
             }
 
-            var pairCheckResult = checkForPairs(this.InputCards);
+            var pairCheckResult = checkForPairs(this.Cards);
             switch (pairCheckResult)
             {
                 //quads
@@ -148,7 +157,7 @@ namespace RustyPoker
                     }
 
                     // regular straight
-                    if (IsStraight(this.InputCards))
+                    if (IsStraight(this.Cards))
                     {
                         return PokerHandRanks.Straight;
                     }
@@ -242,16 +251,18 @@ namespace RustyPoker
             return result;
         }
 
-        public static bool IsStraight(List<Card> cards)
+        public static HandEvaluation IsStraight(List<Card> cards)
         {
+            // make a local copy that we can manipulate if needed.
+            // this is pretty ugly and confusing to have a local copy and still have access to the class copy...aye
+            //var cards = this.Cards;
 
             cards = cards.OrderBy(a => a.Number).ToList();
 
-            bool result = doIsStraight(cards);
-
-            if (!result && cards.Any(a => a.Number == Numbers.Ace))
+            HandEvaluation isStraightResult = doIsStraight(cards);
+            if (isStraightResult! && cards.Any(a => a.Number == Numbers.Ace))
             {
-                // be default above the list is sorted with ace high
+                // by default, the above the list is sorted with ace high
                 // reorder the cards here with ace low and check it again
 
                 var cards2 = new List<Card>();
@@ -265,10 +276,11 @@ namespace RustyPoker
                     cards2.Add(card);
                 }
 
-                result = doIsStraight(cards2);
+                isStraightResult = doIsStraight(cards2);
             }
+            
 
-            return result;
+            return isStraightResult;
         }
 
         private static HandEvaluation doIsStraight(List<Card> cards)
@@ -297,8 +309,12 @@ namespace RustyPoker
                     // once we get to four successful comparisons, we have a straight
                     if (sequenceCounter == STRAIGHT_SEQUENCE_CARD_COUNT - 1)
                     {
-                        return new HandEvaluation { Rank = PokerHandRanks.Straight, Cards = cards.} // this is tricky esp given comment below. need section of cards starting with i going back 5 cards
-                        return true; // todo problem with this is that it returns yes for a straight but it might not be the highest straight in the hand.
+                        // this is tricky esp given comment below. need section of cards starting with i going back 5 cards
+                        // needs a unit test
+                        var bestCards = cards.Skip(i - STRAIGHT_SEQUENCE_CARD_COUNT + 1).Take(STRAIGHT_SEQUENCE_CARD_COUNT).ToList();
+                        result = new HandEvaluation { IsRequestedHand = true, Cards = bestCards };
+                        return result;
+                        //return true; // todo problem with this is that it returns yes for a straight but it might not be the highest straight in the hand.
                     }
                 }
                 else
@@ -307,7 +323,9 @@ namespace RustyPoker
                 }
 
             }
-            return false;
+
+            result = new HandEvaluation { IsRequestedHand = false };
+            return result;
         }
         private static bool isSequence(Card card1, Card card2)
         {
@@ -339,13 +357,14 @@ namespace RustyPoker
             return result;
         }
 
-        public static bool IsFlush(List<Card> cards)
+        public static HandEvaluation IsFlush(List<Card> cards)
         {
-            bool result = false;
+            HandEvaluation result = new HandEvaluation();
             var flushCards = getFlushCards(cards);
             if (flushCards != null)
             {
-                result = true;
+                result.IsRequestedHand = true;
+                result.Cards = flushCards;
             }
             return result;
         }
@@ -355,13 +374,20 @@ namespace RustyPoker
 
     public class HandEvaluation
     {
-        public PokerHandRanks Rank { get; set; }
-        public List<Card> Cards { get; set; }
+        public bool IsRequestedHand { get; set; }
+        //public PokerHandRanks Rank { get; set; }
+        public List<Card>? Cards { get; set; }
         public HandEvaluation()
         {
-            this.Rank = PokerHandRanks.HighCard;
+            //this.Rank = PokerHandRanks.HighCard;
+            this.IsRequestedHand = false;
             this.Cards = null;
-
         }
+
+        public static implicit operator bool(HandEvaluation obj)
+        {
+            return obj != null && obj.IsRequestedHand;
+        }
+
     }
 }
