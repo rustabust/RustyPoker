@@ -1,0 +1,10 @@
+3/2/2024
+* wishing i had started this todo list earlier. cannot figure out what i was doing on the evaluatorrefactor branch...
+* seems i left off writing tests for hand description...
+* ...but seems pokerhand and handevaluator are not completely in sync yet
+* ...in order to report the description of the hand, the hand evaluator needs to keep track of which 5 out of the 7 input cards are the best / actual hand 
+* stopping now. moved evaluator into pokerhand class. functions need to be non-staticized and refer to local cards variables, track best hand
+
+jan 2024
+started this project up...got to some stopping point and branched to do some refactoring....
+did not take many notes

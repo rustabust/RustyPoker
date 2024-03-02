@@ -63,6 +63,18 @@ namespace RustyPokerTests
         }
 
         [TestMethod]
+        public void TestConstructor_HandDescription_RoyalFlush()
+        {
+            Assert.Fail("not implemented");
+        }
+
+        [TestMethod]
+        public void TestConstructor_HandDescription_StraightFlush()
+        {
+            Assert.Fail("not implemented");
+        }
+
+        [TestMethod]
         public void TestConstructor_HandDescription_FourOfAKind()
         {
             var cards = new List<Card>
@@ -97,5 +109,44 @@ namespace RustyPokerTests
             var ph = new PokerHand(cards);
             Assert.AreEqual(ph.Description, "Full House, Aces full of Fives");
         }
+
+        
+
+        [TestMethod]
+        public void TestConstructor_HandDescription_Flush ()
+        {
+            Assert.Fail("not implemented");
+        }
+
+        [TestMethod]
+        public void TestConstructor_HandDescription_Straight()
+        {
+            Assert.Fail("not implemented");
+        }
+
+        [TestMethod]
+        public void TestConstructor_HandDescription_ThreeOfAKind()
+        {
+            Assert.Fail("not implemented");
+        }
+
+        [TestMethod]
+        public void TestConstructor_HandDescription_TwoPair()
+        {
+            Assert.Fail("not implemented");
+        }
+
+        [TestMethod]
+        public void TestConstructor_HandDescription_Pair()
+        {
+            Assert.Fail("not implemented");
+        }
+
+        [TestMethod]
+        public void TestConstructor_HandDescription_HighCard()
+        {
+            Assert.Fail("not implemented");
+        }
+
     }
 }
